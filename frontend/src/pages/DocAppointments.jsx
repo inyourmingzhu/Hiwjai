@@ -1,68 +1,99 @@
 
-import React, { useState } from "react";
-import "./Appointments.css";
+import React, { useEffect, useState } from "react";
+import "./DocAppointments.css";
+import { store } from "../api";
 
-function Appointments() {
-
+function DocAppointments() {
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState("all");
 
-    const appointments = [
-        {
-            id: 1,
-            name: "น.ส. รินทร์ทิพย์ จ.",
-            date: "11 พ.ย. 2569 09:00",
-            type: "ติดตามอาการ",
-            channel: "ออนไลน์",
-            status: "ยืนยันแล้ว"
-        },
-        {
-            id: 2,
-            name: "นาย ธนกร ส.",
-            date: "11 พ.ย. 2569 10:30",
-            type: "ปรึกษาครั้งแรก",
-            channel: "ที่คลินิก",
-            status: "รอยืนยัน"
-        },
-        {
-            id: 3,
-            name: "น.ส. ณัฐชา พ.",
-            date: "11 พ.ย. 2569 13:00",
-            type: "ติดตามอาการ",
-            channel: "ออนไลน์",
-            status: "ยืนยันแล้ว"
-        },
-        {
-            id: 4,
-            name: "นาย ศุภวิชญ์ ก.",
-            date: "11 พ.ย. 2569 14:30",
-            type: "ปรึกษาทั่วไป",
-            channel: "ที่คลินิก",
-            status: "ยกเลิก"
-        },
-        {
-            id: 5,
-            name: "น.ส. ลดาวัลย์ ม.",
-            date: "12 พ.ย. 2569 09:30",
-            type: "ติดตามอาการ",
-            channel: "ออนไลน์",
-            status: "ยืนยันแล้ว"
-        },
-        {
-            id: 6,
-            name: "นาย ปกรณ์ ท.",
-            date: "12 พ.ย. 2569 11:00",
-            type: "ปรึกษาทั่วไป",
-            channel: "ที่คลินิก",
-            status: "รอยืนยัน"
-        }
-    ];
+    const [appointments, setAppointments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-    // ค้นหาและกรองรายการนัดหมาย
+    // ดึงข้อมูลนัดหมายเฉพาะแพทย์ที่ Login
+    useEffect(() => {
+        const fetchAppointments = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const response = await fetch(
+                    "http://localhost:3005/api/appointments",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${store.token()}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "ไม่สามารถเชื่อมต่อ Appointment Service ได้"
+                    );
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(
+                        result.message || "ไม่สามารถดึงข้อมูลนัดหมายได้"
+                    );
+                }
+
+                const formattedData = result.data.map((item) => ({
+                    id: item.booking_id,
+                    hn: item.hn || "-",
+
+                    name: [
+                        item.patient_first_name,
+                        item.patient_last_name
+                    ].filter(Boolean).join(" ") || "ไม่พบชื่อคนไข้",
+
+                    date: item.appointment_date
+                        ? new Date(item.appointment_date).toLocaleDateString("th-TH")
+                        : "-",
+
+                    rawDate: item.appointment_date,
+
+                    time: `${item.start_time || "-"} - ${item.end_time || "-"}`,
+
+                    doctor: [
+                        item.doctor_first_name,
+                        item.doctor_last_name
+                    ].filter(Boolean).join(" ") || "-",
+
+                    nurse: [
+                        item.nurse_first_name,
+                        item.nurse_last_name
+                    ].filter(Boolean).join(" ") || "-",
+
+                    note: item.note || "-",
+                    status: item.status
+                }));
+
+                setAppointments(formattedData);
+
+            } catch (err) {
+                console.error("Appointment Error:", err);
+                setError(err.message);
+
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAppointments();
+    }, []);
+
+    // ค้นหาและกรองรายการ
     const filteredAppointments = appointments.filter((item) => {
+        const keyword = search.toLowerCase();
 
         const matchSearch =
-            item.name.toLowerCase().includes(search.toLowerCase());
+            item.name.toLowerCase().includes(keyword) ||
+            String(item.id).includes(keyword) ||
+            item.hn.toLowerCase().includes(keyword);
 
         const matchStatus =
             status === "all" || item.status === status;
@@ -70,285 +101,257 @@ function Appointments() {
         return matchSearch && matchStatus;
     });
 
-    // แสดงสีตามสถานะ
-    const getStatusClass = (status) => {
+    // นับจำนวนรายการนัดหมาย
+    const today = new Date().toLocaleDateString("en-CA");
 
-        if (status === "ยืนยันแล้ว") return "confirmed";
-        if (status === "รอยืนยัน") return "pending";
-        if (status === "ยกเลิก") return "cancelled";
+    const todayCount = appointments.filter((item) => {
+        if (!item.rawDate) return false;
 
-        return "";
+        const date = new Date(item.rawDate)
+            .toLocaleDateString("en-CA");
+
+        return date === today;
+    }).length;
+
+    const scheduledCount = appointments.filter(
+        (item) => item.status === "scheduled"
+    ).length;
+
+    const cancelledCount = appointments.filter(
+        (item) => item.status === "cancelled"
+    ).length;
+
+    // แปลงสถานะเป็นภาษาไทย
+    const getStatusText = (value) => {
+        switch (value) {
+            case "scheduled":
+                return "นัดหมายแล้ว";
+
+            case "cancelled":
+                return "ยกเลิก";
+
+            default:
+                return value || "-";
+        }
+    };
+
+    const getStatusClass = (value) => {
+        switch (value) {
+            case "scheduled":
+                return "confirmed";
+
+            case "cancelled":
+                return "cancelled";
+
+            default:
+                return "";
+        }
+    };
+
+    // แสดงรายละเอียด
+    const showDetail = (item) => {
+        alert(
+            `รหัสนัดหมาย: ${item.id}\n` +
+            `HN: ${item.hn}\n` +
+            `ชื่อคนไข้: ${item.name}\n` +
+            `วันที่: ${item.date}\n` +
+            `เวลา: ${item.time}\n` +
+            `แพทย์: ${item.doctor}\n` +
+            `ผู้บันทึก: ${item.nurse}\n` +
+            `หมายเหตุ: ${item.note}\n` +
+            `สถานะ: ${getStatusText(item.status)}`
+        );
     };
 
     return (
+        <div className="page-content">
 
-        <div className="appointment-page">
+            {/* Page Heading */}
+            <div className="page-heading">
+                <h1>ตารางนัดหมาย</h1>
+                <p>
+                    ตรวจสอบนัดหมายที่คนไข้จองเข้ามา
+                    และติดตามสถานะการเข้ารับบริการ
+                </p>
+            </div>
 
-            {/* SIDEBAR */}
-            <aside className="sidebar">
+            {/* Summary */}
+            <div className="summary-grid">
 
-                <div className="brand">
-                    <div className="brand-icon">+</div>
-
-                    <div className="brand-copy">
-                        <div className="brand-name">MINDCARE</div>
-                        <div className="brand-sub">DOCTOR PORTAL</div>
-                    </div>
+                <div className="summary-card">
+                    <strong className="summary-green">
+                        {todayCount}
+                    </strong>
+                    <span>นัดหมายวันนี้</span>
                 </div>
 
-                <div className="nav-label">เมนูหลัก</div>
-
-                <a href="#" className="nav-link active">
-                    <span className="nav-icon">▦</span>
-                    <span className="nav-text">ตารางนัดหมาย</span>
-                </a>
-
-                <a href="#" className="nav-link">
-                    <span className="nav-icon">♡</span>
-                    <span className="nav-text">ประวัติคนไข้</span>
-                </a>
-
-                <a href="#" className="nav-link">
-                    <span className="nav-icon">◷</span>
-                    <span className="nav-text">จัดการวันหยุด</span>
-                </a>
-
-                <a href="#" className="nav-link">
-                    <span className="nav-icon">＋</span>
-                    <span className="nav-text">ฟอร์มสั่งยา</span>
-                </a>
-
-                <div className="sidebar-bottom">
-
-                    <div className="doctor">
-                        <div className="avatar">แพ</div>
-
-                        <div className="doctor-info">
-                            <strong>นพ. กิตติพงษ์ ใจดี</strong>
-                            <small>จิตแพทย์</small>
-                        </div>
-                    </div>
-
-                    <a href="#" className="logout">
-                        ออกจากระบบ 
-                    </a>
-
+                <div className="summary-card">
+                    <strong className="summary-orange">
+                        {scheduledCount}
+                    </strong>
+                    <span>นัดหมายแล้ว</span>
                 </div>
 
-            </aside>
-
-
-            {/* HEADER */}
-            <header className="topbar">
-
-                <div className="breadcrumb">
-                    Doctor Portal / <b>ตารางนัดหมาย</b>
+                <div className="summary-card">
+                    <strong className="summary-blue">
+                        {cancelledCount}
+                    </strong>
+                    <span>ยกเลิก</span>
                 </div>
 
-                <div className="top-actions">
-                    <button className="round-action">♙</button>
-                    <button className="round-action profile">ก</button>
+                <div className="summary-card">
+                    <strong className="summary-dark">
+                        {appointments.length}
+                    </strong>
+                    <span>นัดหมายทั้งหมด</span>
                 </div>
 
-            </header>
+            </div>
 
+            {/* Search and Filter */}
+            <div className="filter-panel">
 
-            {/* MAIN CONTENT */}
-            <main className="main-content">
+                <div className="search-box">
+                    <input
+                        type="text"
+                        placeholder="ค้นหาคนไข้ / ชื่อ / รหัส HN"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
 
-                <section className="page-heading">
-                    <h1>ตารางนัดหมาย</h1>
+                <div className="filter-control">
+                    <label>สถานะ</label>
 
-                    <p>
-                        ตรวจสอบนัดหมายที่คนไข้จองเข้ามา
-                        และติดตามสถานะการเข้ารับบริการ
-                    </p>
-                </section>
-
-
-                {/* STATISTICS */}
-                <section className="panel stats">
-
-                    <div>
-                        <div className="stat-number green">12</div>
-                        <div className="stat-label">นัดหมายวันนี้</div>
-                    </div>
-
-                    <div>
-                        <div className="stat-number orange">08</div>
-                        <div className="stat-label">รอยืนยัน</div>
-                    </div>
-
-                    <div>
-                        <div className="stat-number blue">03</div>
-                        <div className="stat-label">กำลังปรึกษา</div>
-                    </div>
-
-                    <div>
-                        <div className="stat-number dark">24</div>
-                        <div className="stat-label">นัดหมายทั้งหมด</div>
-                    </div>
-
-                </section>
-
-
-                {/* FILTER */}
-                <section className="panel filters">
-
-                    <div className="field">
-                        <label htmlFor="search">
-                            ค้นหาคนไข้ / ชื่อ / รหัส
-                        </label>
-
-                        <input
-                            id="search"
-                            type="search"
-                            placeholder="พิมพ์ชื่อหรือรหัสคนไข้"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="field">
-                        <label htmlFor="dateFilter">
-                            วันที่นัดหมาย
-                        </label>
-
-                        <input
-                            id="dateFilter"
-                            type="date"
-                            defaultValue="2026-11-11"
-                        />
-                    </div>
-
-                    <div className="field">
-                        <label htmlFor="statusFilter">
-                            สถานะ
-                        </label>
-
-                        <select
-                            id="statusFilter"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                        >
-                            <option value="all">ทั้งหมด</option>
-                            <option value="ยืนยันแล้ว">ยืนยันแล้ว</option>
-                            <option value="รอยืนยัน">รอยืนยัน</option>
-                            <option value="ยกเลิก">ยกเลิก</option>
-                        </select>
-                    </div>
-
-                    <button
-                        className="btn"
-                        onClick={() => alert("เพิ่มการจอง")}
+                    <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
                     >
-                        ＋ เพิ่มการจอง
-                    </button>
+                        <option value="all">ทั้งหมด</option>
+                        <option value="scheduled">นัดหมายแล้ว</option>
+                        <option value="cancelled">ยกเลิก</option>
+                    </select>
+                </div>
 
-                </section>
+                <div></div>
 
+                <button
+                    className="add-booking-button"
+                    onClick={() => window.location.reload()}
+                >
+                    รีเฟรชข้อมูล
+                </button>
 
-                {/* APPOINTMENT TABLE */}
-                <section className="panel appointments">
+            </div>
 
-                    <div className="table-heading">
+            {/* Appointment Table */}
+            <div className="table-panel">
 
-                        <div>
-                            <h2>รายการนัดหมาย</h2>
-                            <p>แสดงรายการนัดหมายล่าสุดของคนไข้</p>
-                        </div>
-
-                        <button
-                            className="btn"
-                            onClick={() => alert("ดูปฏิทิน")}
-                        >
-                            ดูปฏิทิน
-                        </button>
-
+                <div className="table-heading">
+                    <div>
+                        <h2>รายการนัดหมาย</h2>
+                        <p>แสดงรายการนัดหมายของแพทย์ที่เข้าสู่ระบบ</p>
                     </div>
+                </div>
 
+                {error && (
+                    <div className="error-message">
+                        {error}
+                    </div>
+                )}
 
-                    <div className="table-wrap">
+                <div className="table-scroll">
+                    <table className="appointment-table">
 
-                        <table>
+                        <thead>
+                            <tr>
+                                <th>คนไข้</th>
+                                <th>วัน / เวลา</th>
+                                <th>แพทย์ผู้ดูแล</th>
+                                <th>ผู้บันทึก</th>
+                                <th>สถานะ</th>
+                                <th>รายละเอียด</th>
+                            </tr>
+                        </thead>
 
-                            <thead>
+                        <tbody>
+
+                            {loading ? (
                                 <tr>
-                                    <th>คนไข้</th>
-                                    <th>วันที่ / เวลา</th>
-                                    <th>ประเภทการนัด</th>
-                                    <th>ช่องทาง</th>
-                                    <th>สถานะ</th>
-                                    <th>รายละเอียด</th>
+                                    <td colSpan="6" className="empty-state">
+                                        กำลังโหลดข้อมูลนัดหมาย
+                                    </td>
                                 </tr>
-                            </thead>
 
-                            <tbody>
+                            ) : error ? (
+                                <tr>
+                                    <td colSpan="6" className="empty-state">
+                                        ไม่สามารถโหลดข้อมูลได้
+                                    </td>
+                                </tr>
 
-                                {filteredAppointments.map((item) => (
+                            ) : filteredAppointments.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="empty-state">
+                                        ไม่พบรายการนัดหมาย
+                                    </td>
+                                </tr>
 
+                            ) : (
+                                filteredAppointments.map((item) => (
                                     <tr key={item.id}>
 
-                                        <td>{item.name}</td>
-
-                                        <td>{item.date}</td>
-
-                                        <td>{item.type}</td>
-
-                                        <td>{item.channel}</td>
+                                        <td>
+                                            <strong>{item.name}</strong>
+                                            <small>HN: {item.hn}</small>
+                                        </td>
 
                                         <td>
-                                            <span className={`status ${getStatusClass(item.status)}`}>
-                                                {item.status}
+                                            {item.date}
+                                            <small>{item.time}</small>
+                                        </td>
+
+                                        <td>{item.doctor}</td>
+
+                                        <td>{item.nurse}</td>
+
+                                        <td>
+                                            <span
+                                                className={`status-badge ${getStatusClass(item.status)}`}
+                                            >
+                                                {getStatusText(item.status)}
                                             </span>
                                         </td>
 
                                         <td>
-                                            <a href="#" className="detail-link">
-                                                ดูข้อมูล →
-                                            </a>
+                                            <button
+                                                type="button"
+                                                className="detail-button"
+                                                onClick={() => showDetail(item)}
+                                            >
+                                                ดูข้อมูล
+                                            </button>
                                         </td>
 
                                     </tr>
+                                ))
+                            )}
 
-                                ))}
+                        </tbody>
 
-                            </tbody>
+                    </table>
+                </div>
 
-                        </table>
+                <div className="table-footer">
+                    <span>
+                        แสดง {filteredAppointments.length} จาก {appointments.length} รายการ
+                    </span>
+                </div>
 
-                        {filteredAppointments.length === 0 && (
-                            <div className="empty">
-                                ไม่พบรายการนัดหมาย
-                            </div>
-                        )}
-
-                    </div>
-
-
-                    {/* FOOTER */}
-                    <div className="table-footer">
-
-                        <span>
-                            แสดง {filteredAppointments.length} รายการ
-                        </span>
-
-                        <div className="pagination">
-                            <button>‹</button>
-                            <button className="current">1</button>
-                            <button>2</button>
-                            <button>3</button>
-                            <button>›</button>
-                        </div>
-
-                    </div>
-
-                </section>
-
-            </main>
+            </div>
 
         </div>
     );
 }
 
-export default Appointments;
+export default DocAppointments;
