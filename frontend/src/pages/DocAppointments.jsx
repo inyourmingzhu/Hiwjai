@@ -130,7 +130,7 @@ function Appointments() {
                     </div>
 
                     <a href="#" className="logout">
-                        ออกจากระบบ ↗
+                        ออกจากระบบ 
                     </a>
 
                 </div>
