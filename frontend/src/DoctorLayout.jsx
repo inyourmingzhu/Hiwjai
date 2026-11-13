@@ -14,7 +14,7 @@ function DoctorLayout() {
                 <div className="brand">
 
                     <div>
-                        <h2>HealthConnect</h2>
+                        <h2>HIWJAI</h2>
                         <span>DOCTOR PORTAL</span>
                     </div>
                 </div>
@@ -78,7 +78,7 @@ function DoctorLayout() {
                 <button
                     className="logout-button"
                     onClick={() => {
-                        store.logout();
+                        store.clear();
                         window.location.href = '/login';
                     }}
                 >

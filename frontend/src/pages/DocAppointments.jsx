@@ -169,10 +169,10 @@ function DocAppointments() {
             {/* Page Heading */}
             <div className="page-heading">
                 <h1>ตารางนัดหมาย</h1>
-                <p>
+                {/* <p>
                     ตรวจสอบนัดหมายที่คนไข้จองเข้ามา
                     และติดตามสถานะการเข้ารับบริการ
-                </p>
+                </p> */}
             </div>
 
             {/* Summary */}
@@ -209,20 +209,23 @@ function DocAppointments() {
             </div>
 
             {/* Search and Filter */}
+            {/* Search and Filter */}
             <div className="filter-panel">
 
-                <div className="search-box">
-                    <input
-                        type="text"
-                        placeholder="ค้นหาคนไข้ / ชื่อ / รหัส HN"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+                <div className="filter-item">
+                    <label>ค้นหาคนไข้</label>
+                    <div className="search-box">
+                        <input
+                            type="text"
+                            placeholder="ค้นหาคนไข้ / ชื่อ / รหัส HN"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
                 </div>
 
-                <div className="filter-control">
+                <div className="filter-item">
                     <label>สถานะ</label>
-
                     <select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
@@ -233,14 +236,15 @@ function DocAppointments() {
                     </select>
                 </div>
 
-                <div></div>
-
-                <button
-                    className="add-booking-button"
-                    onClick={() => window.location.reload()}
-                >
-                    รีเฟรชข้อมูล
-                </button>
+                <div className="filter-item">
+                    <label>&nbsp;</label>
+                    <button
+                        className="add-booking-button"
+                        onClick={() => window.location.reload()}
+                    >
+                        รีเฟรชข้อมูล
+                    </button>
+                </div>
 
             </div>
 

@@ -1,5 +1,15 @@
+/* =========================================
+   FONT
+   กำหนดฟอนต์ Prompt ให้เหมือนหน้า Prescription
+========================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
+
+/* =========================================
+   GLOBAL
+   กำหนดรูปแบบพื้นฐานของระบบ
+========================================= */
 
 * {
     box-sizing: border-box;
@@ -9,12 +19,17 @@
     min-height: 100vh;
     display: flex;
     background: #FFFFF0;
-    color: #173b32;
+    /* color: #e448ca; */
     font-family: 'Prompt', sans-serif;
-    font-size: 13px;
+    font-size: 14px;
 }
 
-/* Sidebar */
+
+/* =========================================
+   SIDEBAR
+   เมนูด้านข้างของแพทย์
+========================================= */
+
 .sidebar {
     width: 200px;
     min-width: 200px;
@@ -23,7 +38,7 @@
     display: flex;
     flex-direction: column;
     padding: 16px 13px;
-    border-right: 1px solid #edf1ef;
+    border-right: 1px solid #e5eaf0;
 }
 
 .brand {
@@ -31,7 +46,7 @@
     align-items: center;
     gap: 10px;
     padding: 0 3px 17px;
-    border-bottom: 1px solid #e9efec;
+    border-bottom: 1px solid #e5eaf0;
 }
 
 .brand-icon {
@@ -56,8 +71,8 @@
 
 .brand span {
     display: block;
-    font-size: 8px;
-    color: #526b63;
+    font-size: 10px;
+    color: #84909e;
     letter-spacing: .3px;
 }
 
@@ -66,9 +81,9 @@
 }
 
 .menu-heading {
-    margin: 0 0 5px 8px;
-    color: #71877e;
-    font-size: 10px;
+    margin: 0 0 8px 8px;
+    color: #84909e;
+    font-size: 12px;
 }
 
 .menu-item {
@@ -78,13 +93,20 @@
     padding: 12px 10px;
     margin-bottom: 5px;
     border-radius: 8px;
-    color: #000000;
-    font-size: 12px;
+    color: #263445;
+    font-size: 14px;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.menu-item:hover {
+    background: #f5f9f8;
+    color: #398b82;
 }
 
 .menu-item.active {
     color: #00C0E8;
-    background: #e8f4ee;
+    background: #eff8f6;
     font-weight: 600;
     border-left: 3px solid #00C0E8;
     padding-left: 7px;
@@ -96,10 +118,16 @@
     font-size: 16px;
 }
 
+
+/* =========================================
+   SIDEBAR PROFILE
+   ข้อมูลแพทย์ด้านล่าง Sidebar
+========================================= */
+
 .sidebar-profile {
     margin-top: auto;
     padding: 17px 5px 12px;
-    border-top: 1px solid #e9efec;
+    border-top: 1px solid #e5eaf0;
     display: flex;
     align-items: center;
     gap: 9px;
@@ -110,41 +138,59 @@
     height: 34px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: #e1f0e8;
-    color: #00C0E8;
+    background: #eff8f6;
+    color: #398b82;
     display: grid;
     place-items: center;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .sidebar-profile strong {
     display: block;
-    font-size: 10px;
-    color: #00C0E8;
+    font-size: 13px;
+    color: #263445;
+    font-weight: 600;
 }
 
 .sidebar-profile span {
     display: block;
-    font-size: 9px;
-    color: #82948c;
+    font-size: 12px;
+    color: #84909e;
 }
 
 .logout-button {
     background: transparent;
     border: none;
     text-align: left;
-    padding: 5px 7px;
+    padding: 8px 7px;
     font-family: inherit;
-    font-size: 10px;
-    color: #70867d;
+    font-size: 13px;
+    color: #84909e;
     cursor: pointer;
+    transition: .2s;
 }
 
-/* Main */
+.logout-button:hover {
+    color: #d34b4b;
+}
+
+
+/* =========================================
+   MAIN CONTENT
+   พื้นที่แสดงเนื้อหาหลัก
+========================================= */
+
 .main-content {
     flex: 1;
     min-width: 0;
+    background: #FFFFF0;
 }
+
+
+/* =========================================
+   TOPBAR
+   แถบด้านบนของหน้า
+========================================= */
 
 .topbar {
     height: 58px;
@@ -153,18 +199,19 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 28px;
+    border-bottom: 1px solid #e5eaf0;
 }
 
 .breadcrumb {
     display: flex;
     align-items: center;
     gap: 9px;
-    color: #81938b;
-    font-size: 10px;
+    color: #84909e;
+    font-size: 13px;
 }
 
 .breadcrumb strong {
-    color: #16825e;
+    color: #00C0E8;
     font-weight: 600;
 }
 
@@ -176,59 +223,71 @@
 
 .topbar-icon,
 .topbar-avatar {
-    width: 29px;
-    height: 29px;
+    width: 34px;
+    height: 34px;
     border: none;
     border-radius: 50%;
-    background: #eff5f1;
-    color: #56816f;
+    background: #eff8f6;
+    color: #00C0E8;
     cursor: pointer;
 }
 
 .topbar-avatar {
-    background: #e0eee6;
-    color: #21815f;
+    background: #eff8f6;
+    color: #00C0E8;
 }
 
+
+/* =========================================
+   PAGE CONTENT
+   พื้นที่เนื้อหาของแต่ละหน้า
+========================================= */
+
 .page-content {
-    max-width: 1450px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 18px 28px 30px;
+    padding: 28px 28px 30px;
 }
 
 .page-heading {
-    margin-bottom: 17px;
+    margin-bottom: 25px;
 }
 
 .page-heading h1 {
-    margin: 0 0 3px;
-    font-size: 23px;
-    color: #173d32;
+    margin: 0 0 8px;
+    font-size: 26px;
+    color: #263445;
     font-weight: 600;
 }
 
 .page-heading p {
     margin: 0;
-    color: #7d9087;
-    font-size: 10px;
+    color: #84909e;
+    font-size: 14px;
 }
 
-/* Summary */
+
+/* =========================================
+   SUMMARY
+   กล่องสรุปข้อมูลการนัดหมาย
+========================================= */
+
 .summary-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     background: #ffffff;
-    border-radius: 13px;
-    margin-bottom: 15px;
-    padding: 13px 20px;
-    min-height: 74px;
+    border: 1px solid #e5eaf0;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    padding: 18px 20px;
+    min-height: 90px;
 }
 
 .summary-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 2px;
+    gap: 4px;
     padding-left: 2px;
 }
 
@@ -236,141 +295,151 @@
     font-size: 24px;
     line-height: 1.2;
     font-weight: 600;
+    color: #263445;
 }
 
 .summary-card span {
-    color: #82928b;
-    font-size: 9px;
+    color: #84909e;
+    font-size: 13px;
 }
 
+/* สีตัวเลขสรุปแต่ละประเภท */
 .summary-appointmenttoday {
-    color: #000000;
+    color: #398b82;
 }
 
 .summary-waitappointment {
-    color: #000000;
+    color: #d68b29;
 }
 
 .summary-confirmappointment {
-    color: #000000;
+    color: #398b82;
 }
 
 .summary-allappointment {
-    color: #000000;
+    color: #263445;
 }
 
-/* Filter */
+
+/* =========================================
+   FILTER
+========================================= */
+
 .filter-panel {
     display: grid;
-    grid-template-columns: minmax(180px, 1.4fr) minmax(130px, .9fr) minmax(130px, .9fr) auto;
-    align-items: center;
+    grid-template-columns: 1.4fr 0.9fr auto;
+    align-items: end;
     gap: 25px;
     background: #ffffff;
-    border-radius: 13px;
-    padding: 12px 20px;
-    margin-bottom: 15px;
-    min-height: 58px;
+    border: 1px solid #e5eaf0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    min-height: 65px;
 }
 
-.search-box input {
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.filter-item label {
+    color: #263445;
+    font-size: 13px;
+    font-weight: 500;
+    height: 20px;
+}
+
+.search-box input,
+.filter-item select {
     width: 100%;
-    border: none;
-    border-bottom: 1px solid #e6ece8;
-    padding: 8px 3px;
+    height: 40px;
+    border: 1px solid #dce3eb;
+    border-radius: 7px;
+    padding: 9px 12px;
     outline: none;
-    color: #315448;
+    background: white;
+    color: #263445;
     font-family: inherit;
-    font-size: 10px;
-    background: transparent;
+    font-size: 13px;
 }
 
-.search-box input:focus {
-    border-bottom-color: #269b72;
+.search-box input:focus,
+.filter-item select:focus {
+    border-color: #00C0E8;
 }
 
 .search-box input::placeholder {
-    color: #8a9b93;
-}
-
-.filter-control {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.filter-control label {
-    color: #81928a;
-    font-size: 9px;
-}
-
-.filter-control input,
-.filter-control select {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: #24483b;
-    font-family: inherit;
-    font-size: 10px;
-    font-weight: 500;
-    cursor: pointer;
+    color: #84909e;
 }
 
 .add-booking-button {
-    padding: 9px 16px;
-    background: white;
-    color: #244b3e;
-    border: 1px solid #e1eae5;
-    border-radius: 8px;
+    height: 40px;
+    padding: 0 18px;
+    background: #00C0E8;
+    color: white;
+    border: none;
+    border-radius: 7px;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 13px;
     white-space: nowrap;
     cursor: pointer;
     transition: .2s;
 }
 
-.add-booking-button:hover,
-.today-button:hover {
-    background: #edf6f0;
-    border-color: #a9cbb9;
+.add-booking-button:hover {
+    background: #398b82;
 }
 
-/* Table */
+
+/* =========================================
+   TABLE
+   ตารางแสดงข้อมูลการนัดหมาย
+========================================= */
+
 .table-panel {
     background: #ffffff;
-    border-radius: 13px;
-    padding: 16px 19px 12px;
+    border: 1px solid #e5eaf0;
+    border-radius: 12px;
+    padding: 20px 19px 15px;
 }
 
 .table-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .table-heading h2 {
     margin: 0;
     font-size: 20px;
     font-weight: 600;
-    color: #1c4035;
+    color: #263445;
 }
 
 .table-heading p {
-    margin: 2px 0 0;
-    font-size: 9px;
-    color: #84948d;
+    margin: 5px 0 0;
+    font-size: 13px;
+    color: #84909e;
 }
 
 .today-button {
-    border: 1px solid #e3ebe6;
+    border: 1px solid #dce3eb;
     background: #ffffff;
-    border-radius: 8px;
-    padding: 8px 25px;
-    color: #315849;
+    border-radius: 7px;
+    padding: 10px 20px;
+    color: #398b82;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 13px;
     cursor: pointer;
+    transition: .2s;
+}
+
+.today-button:hover {
+    background: #eff8f6;
+    border-color: #398b82;
 }
 
 .table-scroll {
@@ -385,15 +454,15 @@
 }
 
 .appointment-table thead {
-    background: #f5f9f7;
+    background: #f5f9f8;
 }
 
 .appointment-table th {
     text-align: left;
-    color: #557267;
-    font-weight: 500;
-    font-size: 9px;
-    padding: 11px 14px;
+    color: #263445;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 13px 14px;
     white-space: nowrap;
 }
 
@@ -406,10 +475,10 @@
 }
 
 .appointment-table td {
-    padding: 13px 14px;
-    border-bottom: 1px solid #e8efeb;
-    color: #315448;
-    font-size: 10px;
+    padding: 14px;
+    border-bottom: 1px solid #e5eaf0;
+    color: #263445;
+    font-size: 13px;
     vertical-align: middle;
 }
 
@@ -418,35 +487,41 @@
 }
 
 .appointment-table tbody tr:hover {
-    background: #fbfdfc;
+    background: #f9fbfa;
 }
 
 .appointment-table td strong {
     display: block;
-    color: #24483c;
+    color: #263445;
     font-weight: 500;
 }
 
 .appointment-table td small {
     display: block;
     margin-top: 4px;
-    color: #879991;
-    font-size: 9px;
+    color: #84909e;
+    font-size: 12px;
 }
+
+
+/* =========================================
+   STATUS BADGE
+   สถานะของการนัดหมาย
+========================================= */
 
 .status-badge {
     display: inline-block;
     min-width: 74px;
-    padding: 5px 11px;
+    padding: 6px 12px;
     text-align: center;
     border-radius: 20px;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 500;
 }
 
 .status-badge.confirmed {
-    color: #19815f;
-    background: #e8f5ee;
+    color: #28776e;
+    background: #eff8f6;
 }
 
 .status-badge.waiting {
@@ -455,8 +530,8 @@
 }
 
 .status-badge.cancelled {
-    color: #d35d65;
-    background: #fceeee;
+    color: #d34b4b;
+    background: #fff0f0;
 }
 
 .status-badge.completed {
@@ -464,62 +539,84 @@
     background: #edf4fc;
 }
 
+
+/* =========================================
+   DETAIL BUTTON
+   ปุ่มดูรายละเอียด
+========================================= */
+
 .detail-button {
     border: none;
     background: transparent;
-    color: #13845e;
+    color: #398b82;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
 }
 
 .detail-button:hover {
-    color: #075b40;
+    color: #28776e;
     text-decoration: underline;
 }
+
+
+/* =========================================
+   MESSAGE
+   ข้อความแจ้งเตือนและข้อมูลว่าง
+========================================= */
 
 .empty-state {
     text-align: center !important;
     padding: 35px !important;
-    color: #899991 !important;
+    color: #84909e !important;
 }
 
 .error-message {
-    padding: 10px 13px;
-    margin-bottom: 12px;
+    padding: 12px 15px;
+    margin-bottom: 15px;
     border-radius: 7px;
     background: #fff0f0;
-    color: #c64e4e;
-    font-size: 11px;
+    color: #d34b4b;
+    font-size: 13px;
 }
+
+
+/* =========================================
+   TABLE FOOTER
+   ส่วนล่างของตารางและ Pagination
+========================================= */
 
 .table-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 11px 2px 1px;
-    color: #82948b;
-    font-size: 9px;
+    padding: 15px 2px 1px;
+    color: #84909e;
+    font-size: 12px;
 }
 
 .pagination {
     display: flex;
     align-items: center;
     gap: 9px;
-    color: #218665;
+    color: #398b82;
 }
 
 .pagination button {
-    width: 24px;
-    height: 24px;
-    border: 1px solid #e6eee9;
-    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #e5eaf0;
+    border-radius: 6px;
     background: #ffffff;
-    color: #218665;
+    color: #398b82;
     font-size: 16px;
     cursor: pointer;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: #eff8f6;
 }
 
 .pagination button:disabled {
@@ -527,15 +624,34 @@
     cursor: not-allowed;
 }
 
-/* Responsive */
+
+/* =========================================
+   GLOBAL FORM
+   กำหนดฟอนต์ให้ Input และปุ่มทั้งหมด
+========================================= */
+
+.doctor-portal input,
+.doctor-portal select,
+.doctor-portal textarea,
+.doctor-portal button {
+    font-family: 'Prompt', sans-serif;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   รองรับหน้าจอขนาดเล็ก
+========================================= */
+
 @media (max-width: 900px) {
+
     .sidebar {
         width: 170px;
         min-width: 170px;
     }
 
     .page-content {
-        padding: 18px;
+        padding: 20px;
     }
 
     .filter-panel {
@@ -548,7 +664,9 @@
     }
 }
 
+
 @media (max-width: 600px) {
+
     .doctor-portal {
         display: block;
     }
@@ -580,7 +698,7 @@
     }
 
     .page-heading h1 {
-        font-size: 20px;
+        font-size: 22px;
     }
 
     .summary-grid {
@@ -599,6 +717,6 @@
     }
 
     .table-panel {
-        padding: 13px 10px;
+        padding: 15px 10px;
     }
 }

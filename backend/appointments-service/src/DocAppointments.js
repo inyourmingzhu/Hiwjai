@@ -47,12 +47,19 @@ router.get('/', verifyDoctor, async (req, res) => {
     try {
         const { date } = req.query;
 
-        // ใช้ ID จาก Token เท่านั้น ไม่รับ doctor_id จาก Frontend
+        // ใช้ ID จาก Token เท่านั้น
         const doctorId = req.user.id;
 
         let query = `
             SELECT
                 b.id AS booking_id,
+
+                -- รหัสคนไข้จากตาราง patient_info
+                b.patient_id AS patient_id,
+
+                -- รหัสผู้ใช้จากตาราง users
+                p.user_id AS user_id,
+
                 b.appointment_date,
                 b.start_time,
                 b.end_time,
@@ -89,7 +96,7 @@ router.get('/', verifyDoctor, async (req, res) => {
 
         const params = [doctorId];
 
-        // กรองวันที่เพิ่มเติม โดยยังจำกัดเฉพาะหมอคนเดิม
+        // กรองวันที่
         if (date) {
             query += ' AND b.appointment_date = ?';
             params.push(date);
